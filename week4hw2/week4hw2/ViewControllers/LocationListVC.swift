@@ -22,6 +22,13 @@ class LocationListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var weatherLocation = WeatherLocation(name: "Istanbul", latitude: 0, longitude: 0)
+          weatherLocations.append(weatherLocation)
+          weatherLocation = WeatherLocation(name: "Manisa", latitude: 0, longitude: 0)
+          weatherLocations.append(weatherLocation)
+          weatherLocation = WeatherLocation(name: "Izmir", latitude: 0, longitude: 0)
+          weatherLocations.append(weatherLocation)
+        
         setupUI()
     }
     
@@ -52,18 +59,16 @@ class LocationListVC: UIViewController {
             print("Error: Saving Encoded didn't work!")
         }
     }
-    
-//    //TODO: - Seguesiz yapma yolunu bul!
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        selectedLocationIndex = tableView.indexPathForSelectedRow!.row
-//        saveLocations()
-//    }
 }
 
 // MARK: - TableView Delegate
 extension LocationListVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("\(indexPath.row)")
+        
+        let vc = UIStoryboard(name: "Main", bundle:Bundle.main).instantiateViewController(withIdentifier:"LocationDetailVC") as! LocationDetailVC
+        self.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -90,6 +95,19 @@ extension LocationListVC: UITableViewDataSource {
             self.weatherLocations.remove(at: indexPath.row)
             self.tableView.deleteRows(at: [indexPath], with: .fade)
         }
+    }
+    
+    // MARK: - Freezing first element
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return (indexPath.row != 0 ? true : false)
+    }
+    
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return (indexPath.row != 0 ? true : false)
+    }
+    
+    func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
+        return (proposedDestinationIndexPath.row == 0 ? sourceIndexPath : proposedDestinationIndexPath)
     }
 }
 
