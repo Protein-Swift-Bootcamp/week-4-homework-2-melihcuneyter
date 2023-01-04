@@ -9,31 +9,55 @@ import UIKit
 import GooglePlaces
 
 class LocationListVC: UIViewController {
-    
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var searchBar: UISearchBar!
+
     @IBOutlet weak var tableView: UITableView!
     
+    var searchController = UISearchController()
+    var resultsViewController: GMSAutocompleteResultsViewController?
+    var resultView: UITextView?
+    
     var weatherLocations: [WeatherLocation] = []
+    var selectedLocationIndex = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var weatherLocation = WeatherLocation(name: "Istanbul", latitude: 0, longitude: 0)
-        weatherLocations.append(weatherLocation)
-        weatherLocation = WeatherLocation(name: "Manisa", latitude: 0, longitude: 0)
-        weatherLocations.append(weatherLocation)
-        weatherLocation = WeatherLocation(name: "Izmir", latitude: 0, longitude: 0)
-        weatherLocations.append(weatherLocation)
-        
-        setupTableViewUI()
+        setupUI()
     }
     
-    private func setupTableViewUI() {
+    private func setupUI() {
+        title = "Hava Durumu"
+        
         tableView.separatorStyle = .none
         tableView.backgroundColor = .black
         tableView.register(.init(nibName: "LocationTVC", bundle: nil), forCellReuseIdentifier: "LocationTVC")
+        
+        // MARK: GMSAutoComplete SearchController add NavigationItem and ResultViewController
+        resultsViewController = GMSAutocompleteResultsViewController()
+        resultsViewController?.delegate = self
+        
+        searchController = UISearchController(searchResultsController: resultsViewController)
+        searchController.searchResultsUpdater = resultsViewController
+        
+        searchController.searchBar.sizeToFit()
+        searchController.searchBar.placeholder = "Şehir veya konum arayın."
+        navigationItem.searchController = searchController
     }
+    
+    private func saveLocations() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(weatherLocations) {
+            UserDefaults.standard.set(encoded, forKey: "weatherLocations")
+        } else {
+            print("Error: Saving Encoded didn't work!")
+        }
+    }
+    
+//    //TODO: - Seguesiz yapma yolunu bul!
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        selectedLocationIndex = tableView.indexPathForSelectedRow!.row
+//        saveLocations()
+//    }
 }
 
 // MARK: - TableView Delegate
@@ -55,6 +79,7 @@ extension LocationListVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTVC", for: indexPath) as! LocationTVC
+        cell.locationNameLabel.text = weatherLocations[indexPath.row].name
         return cell
     }
     
@@ -68,32 +93,18 @@ extension LocationListVC: UITableViewDataSource {
     }
 }
 
-// MARK: - SearchBar Delegate
-extension LocationListVC: UISearchBarDelegate {
-    // When tapped searchbar, present autocompleteVC
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        present(autocompleteController, animated: true, completion: nil)
-    }
-}
-
-// MARK: - GMSAutoComplete Delegate
-extension LocationListVC: GMSAutocompleteViewControllerDelegate {
-    func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
-        
+// MARK: - AutocompleteResultsViewController Delegate
+extension LocationListVC: GMSAutocompleteResultsViewControllerDelegate {
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController, didAutocompleteWith place: GMSPlace) {
         let newLocation = WeatherLocation(name: place.name ?? "unkown place", latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
         weatherLocations.append(newLocation)
         tableView.reloadData()
         
+        searchController.searchBar.text = ""
         dismiss(animated: true, completion: nil)
     }
     
-    func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController, didFailAutocompleteWithError error: Error) {
         print("Error: ", error.localizedDescription)
-    }
-    
-    func wasCancelled(_ viewController: GMSAutocompleteViewController) {
-        dismiss(animated: true, completion: nil)
     }
 }
