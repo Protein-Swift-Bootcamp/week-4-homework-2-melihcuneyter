@@ -49,7 +49,6 @@
                 <constraints>
                     <constraint firstItem="2dG-ao-0de" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" symbolic="YES" id="Aac-IX-M97"/>
                     <constraint firstAttribute="trailing" secondItem="9fR-gm-enA" secondAttribute="trailing" constant="21" id="BpQ-dl-hsf"/>
-                    <constraint firstItem="xPP-no-4fd" firstAttribute="leading" secondItem="9fR-gm-enA" secondAttribute="leading" id="PPf-9g-r21"/>
                     <constraint firstItem="xPP-no-4fd" firstAttribute="centerX" secondItem="9fR-gm-enA" secondAttribute="centerX" id="TSb-kK-WUV"/>
                     <constraint firstAttribute="bottomMargin" secondItem="xPP-no-4fd" secondAttribute="bottom" constant="6" id="cui-Ol-Y92"/>
                     <constraint firstItem="2dG-ao-0de" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="24" id="dot-bC-4GP"/>

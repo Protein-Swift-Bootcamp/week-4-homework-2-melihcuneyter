@@ -145,7 +145,7 @@ class WeatherDetail: WeatherLocation {
         case 500, 501, 520, 521, 531:
             return "cloud.rain"
         case 502, 503, 504, 522:
-            return "cloud.heavy.rain"
+            return "cloud.rain"
         case 511, 611...616:
             return "cloud.sleet"
         case 600...602, 620...622:

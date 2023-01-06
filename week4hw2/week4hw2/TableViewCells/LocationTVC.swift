@@ -14,6 +14,15 @@ class LocationTVC: UITableViewCell {
     @IBOutlet weak var locationTempLabel: UILabel!
     @IBOutlet weak var locationIconImageView: UIImageView!
     
+    var currentWeather: WeatherDetail! {
+        didSet {
+            locationNameLabel.text = currentWeather.name
+            locationSummaryLabel.text = currentWeather.summary
+            locationTempLabel.text = " \(currentWeather.temperature)°"
+            locationIconImageView.image = UIImage(systemName: currentWeather.dayIcon)
+        }
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
